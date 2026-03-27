@@ -1,9 +1,19 @@
+"""
+This module is for nostalgic collections management system
+@version 1.0.0
+@author Laidy Hurtado
+"""
+
 import tkinter as tk
 from tkinter import messagebox
 
 # -----------------------------
 # BASE DE DATOS (memoria)
 # -----------------------------
+"""
+stores users, collections and objects in memory
+Estoy documentando las estructuras principales
+"""
 usuarios = []
 colecciones = []
 objetos = []
@@ -13,6 +23,10 @@ usuario_actual = None
 # FUNCIONES USUARIO
 # -----------------------------
 def registrar():
+    """
+    This function registers a new user
+    Estoy documentando la función de registro
+    """
     username = entry_user.get()
     password = entry_pass.get()
     rol = "Administrador" if username.lower() == "admin" else "Usuario"
@@ -38,6 +52,10 @@ def registrar():
 
 
 def login():
+    """
+    This function validates user credentials
+    Estoy documentando el inicio de sesión
+    """
     global usuario_actual
 
     username = entry_user.get()
@@ -57,6 +75,10 @@ def login():
 # PANEL USUARIO
 # -----------------------------
 def abrir_panel_usuario():
+    """
+    This function opens the user panel window
+    Estoy documentando el panel principal del usuario
+    """
     panel = tk.Toplevel(root)
     panel.title("Panel de Usuario")
     panel.geometry("300x350")
@@ -78,14 +100,7 @@ def abrir_panel_usuario():
 # -----------------------------
 # COLECCIONES
 # -----------------------------
-""
-
-
 def crear_coleccion():
-    """
-    This function creates a new collection
-    Estoy documentando la creación de colecciones
-    """
     ventana = tk.Toplevel(root)
     ventana.title("Nueva Colección")
 
@@ -94,10 +109,6 @@ def crear_coleccion():
     entry_nombre.pack()
 
     def guardar():
-        """
-        This function saves a collection
-        Estoy documentando el guardado de la colección
-        """
         nombre = entry_nombre.get()
 
         if nombre == "":
@@ -116,10 +127,6 @@ def crear_coleccion():
 
 
 def ver_colecciones():
-    """
-    This function shows user collections
-    Estoy documentando la visualización de colecciones
-    """
     ventana = tk.Toplevel(root)
     ventana.title("Mis Colecciones")
 
@@ -132,6 +139,103 @@ def ver_colecciones():
     for c in lista:
         tk.Label(ventana, text=f"Colección: {c['nombre']}").pack()
 
+
+# -----------------------------
+# OBJETOS
+# -----------------------------
+def agregar_objeto():
+    ventana = tk.Toplevel(root)
+    ventana.title("Agregar Objeto")
+
+    tk.Label(ventana, text="Nombre del objeto").pack()
+    entry_nombre = tk.Entry(ventana)
+    entry_nombre.pack()
+
+    tk.Label(ventana, text="Descripción").pack()
+    entry_desc = tk.Entry(ventana)
+    entry_desc.pack()
+
+    tk.Label(ventana, text="Colección").pack()
+    entry_col = tk.Entry(ventana)
+    entry_col.pack()
+
+    def guardar():
+        nombre = entry_nombre.get()
+        desc = entry_desc.get()
+        coleccion = entry_col.get()
+
+        if nombre == "" or coleccion == "":
+            messagebox.showerror("Error", "Campos obligatorios")
+            return
+
+        objetos.append({
+            "id": len(objetos) + 1,
+            "nombre": nombre,
+            "descripcion": desc,
+            "coleccion": coleccion,
+            "usuario": usuario_actual["username"]
+        })
+
+        messagebox.showinfo("Éxito", "Objeto agregado")
+        ventana.destroy()
+
+    tk.Button(ventana, text="Guardar", command=guardar).pack(pady=5)
+
+
+def ver_objetos():
+    ventana = tk.Toplevel(root)
+    ventana.title("Mis Objetos")
+
+    lista = [o for o in objetos if o["usuario"] == usuario_actual["username"]]
+
+    if not lista:
+        tk.Label(ventana, text="No tienes objetos").pack()
+        return
+
+    for o in lista:
+        texto = f"{o['nombre']} ({o['coleccion']})"
+        tk.Label(ventana, text=texto).pack()
+
+
+# -----------------------------
+# ADMIN
+# -----------------------------
+def mostrar_usuarios():
+    ventana_lista = tk.Toplevel(root)
+    ventana_lista.title("Lista de Usuarios")
+
+    for u in usuarios:
+        texto = f"ID: {u['id']} | Usuario: {u['username']} | Rol: {u['rol']}"
+        tk.Label(ventana_lista, text=texto).pack()
+
+
+# -----------------------------
+# UTILIDADES
+# -----------------------------
+def limpiar_campos():
+    entry_user.delete(0, tk.END)
+    entry_pass.delete(0, tk.END)
+
+
+# -----------------------------
+# INTERFAZ PRINCIPAL
+# -----------------------------
+root = tk.Tk()
+root.title("Gestión de Colecciones Nostálgicas")
+root.geometry("300x200")
+
+tk.Label(root, text="Usuario").pack()
+entry_user = tk.Entry(root)
+entry_user.pack()
+
+tk.Label(root, text="Contraseña").pack()
+entry_pass = tk.Entry(root, show="*")
+entry_pass.pack()
+
+tk.Button(root, text="Registrar", command=registrar).pack(pady=5)
+tk.Button(root, text="Iniciar Sesión", command=login).pack(pady=5)
+
+root.mainloop()
 
 # -----------------------------
 # OBJETOS
